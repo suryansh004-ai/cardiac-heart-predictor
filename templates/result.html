@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result - Heart Disease Prediction System{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+    <div class="page-header">
+        <span class="section-tag">Inference Output</span>
+        <h1 class="page-title">Model Risk Assessment Result</h1>
+        <p class="page-subtitle">
+            Algorithmic prediction output calculated by the trained Logistic Regression model.
+        </p>
+    </div>
+
+    <!-- Main Result Card -->
+    <div class="result-card {% if prediction == 1 %}result-positive{% else %}result-negative{% endif %}">
+        <div class="result-header">
+            <div class="result-icon">
+                {% if prediction == 1 %}
+                    ⚠️
+                {% else %}
+                    ✅
+                {% endif %}
+            </div>
+            <div class="result-badge-container">
+                <span class="result-badge {% if prediction == 1 %}badge-high-risk{% else %}badge-low-risk{% endif %}">
+                    {% if prediction == 1 %}
+                        Predicted Likelihood: Higher Risk of Heart Disease (Class 1)
+                    {% else %}
+                        Predicted Likelihood: Lower Risk of Heart Disease (Class 0)
+                    {% endif %}
+                </span>
+            </div>
+            <h2 class="result-headline">
+                {% if prediction == 1 %}
+                    The model predicts a higher likelihood of heart disease.
+                {% else %}
+                    The model predicts a lower likelihood of heart disease.
+                {% endif %}
+            </h2>
+            <p class="result-summary">
+                {% if prediction == 1 %}
+                    Based on the mathematical pattern in the provided clinical attributes, the classifier detected elevated statistical risk markers consistent with heart disease cases in the training dataset.
+                {% else %}
+                    Based on the mathematical pattern in the provided clinical attributes, the classifier found indicators consistent with lower cardiovascular risk profiles in the training dataset.
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Model Predicted Probability Bar -->
+        <div class="probability-section">
+            <div class="prob-header">
+                <span class="prob-label">Model-Predicted Probability:</span>
+                <span class="prob-value">
+                    {% if prediction == 1 %}
+                        <strong>{{ prob_risk }}%</strong> estimated probability of cardiac risk
+                    {% else %}
+                        <strong>{{ prob_healthy }}%</strong> estimated probability of healthy profile
+                    {% endif %}
+                </span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill {% if prediction == 1 %}fill-danger{% else %}fill-success{% endif %}"
+                     style="width: {{ prob_risk if prediction == 1 else prob_healthy }}%;">
+                    <span>{{ prob_risk if prediction == 1 else prob_healthy }}%</span>
+                </div>
+            </div>
+            <div class="prob-breakdown">
+                <span>Lower Risk: {{ prob_healthy }}%</span>
+                <span>Higher Risk: {{ prob_risk }}%</span>
+            </div>
+            <small class="prob-caption">
+                * Note: This is an algorithmic statistical probability computed by the Logistic Regression sigmoid function (\(P(y=1|\mathbf{x}) = \frac{1}{1 + e^{-\mathbf{w}^T\mathbf{x}}}\)). It is NOT a clinical diagnosis.
+            </small>
+        </div>
+
+        <!-- Key Contributing Risk Factors -->
+        <div class="factors-section">
+            <h3>Key Clinical Risk Markers Observed in Input:</h3>
+            {% if risk_factors %}
+                <ul class="risk-factors-list">
+                    {% for factor in risk_factors %}
+                        <li>
+                            <span class="factor-bullet">⚠️</span>
+                            <span>{{ factor }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-risk-factors">
+                    ✅ No major elevated risk markers (such as stage 2 hypertension, severe cholesterol, or exercise angina) were flagged in the input profile.
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- Educational Disclaimer Banner -->
+        <div class="disclaimer-banner result-disclaimer">
+            <span class="disclaimer-icon">⚠️</span>
+            <div>
+                <strong>Mandatory Educational Disclaimer:</strong>
+                <p>
+                    This prediction is for educational and demonstration purposes only and is not medical advice.
+                    Machine learning models can make errors. Always consult a qualified cardiologist or healthcare professional for clinical diagnostic evaluation.
+                </p>
+            </div>
+        </div>
+
+        <!-- Navigation / Next Steps -->
+        <div class="result-actions">
+            <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">
+                &larr; Make Another Prediction
+            </a>
+            <a href="{{ url_for('about') }}" class="btn btn-outline btn-lg">
+                Inspect Model Evaluation Metrics
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary of User Inputs -->
+    <div class="card data-summary-card">
+        <h3 class="data-summary-title">Summary of Input Parameters Evaluated</h3>
+        <p class="data-summary-subtitle">The table below records the exact parameters received and scaled for model inference:</p>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Clinical Parameter</th>
+                        <th>Entered Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for param, val in user_data.items() %}
+                        <tr>
+                            <td><strong>{{ param }}</strong></td>
+                            <td>{{ val }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

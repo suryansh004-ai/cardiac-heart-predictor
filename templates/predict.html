@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Predict Risk - Heart Disease Prediction System{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+    <div class="page-header">
+        <span class="section-tag">Machine Learning Form</span>
+        <h1 class="page-title">Patient Clinical Assessment Form</h1>
+        <p class="page-subtitle">
+            Enter the 13 clinical attributes below. For quick demonstration during viva or interviews,
+            you can load sample demo profiles.
+        </p>
+    </div>
+
+    <!-- Quick Fill Demonstration Presets -->
+    <div class="preset-box">
+        <div class="preset-info">
+            <strong>📋 Demonstration Presets:</strong>
+            <span>Quickly populate form with demonstration data points to test the model pipeline:</span>
+        </div>
+        <div class="preset-buttons">
+            <button type="button" class="btn btn-sm btn-outline-success" id="btn-load-low-risk">
+                Load Sample Low-Risk Profile
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" id="btn-load-high-risk">
+                Load Sample Higher-Risk Profile
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-reset-form">
+                Clear Form
+            </button>
+        </div>
+        <small class="preset-disclaimer">
+            * Note: Demonstration profiles are synthetic sample points used solely for testing model response. They do not represent specific real patient cases.
+        </small>
+    </div>
+
+    <!-- Prediction Form -->
+    <form action="{{ url_for('predict') }}" method="POST" class="form-card" id="prediction-form">
+        <!-- Section 1: Demographics & Basic Vitals -->
+        <div class="form-section">
+            <h3 class="form-section-title">
+                <span class="section-icon">👤</span> 1. Patient Demographics & Baseline Vitals
+            </h3>
+            <div class="form-grid">
+                <!-- Age -->
+                <div class="form-group">
+                    <label for="age" class="form-label">Age (Years) <span class="required">*</span></label>
+                    <input type="number" id="age" name="age" class="form-control" min="20" max="100" placeholder="e.g. 52" required>
+                    <small class="form-hint">Patient age in years (dataset range: 29 - 77)</small>
+                </div>
+
+                <!-- Sex -->
+                <div class="form-group">
+                    <label for="sex" class="form-label">Biological Sex <span class="required">*</span></label>
+                    <select id="sex" name="sex" class="form-select" required>
+                        <option value="" disabled selected>Select biological sex</option>
+                        <option value="1">Male (1)</option>
+                        <option value="0">Female (0)</option>
+                    </select>
+                    <small class="form-hint">Encoded as 1 for Male, 0 for Female</small>
+                </div>
+
+                <!-- Resting Blood Pressure -->
+                <div class="form-group">
+                    <label for="trestbps" class="form-label">Resting Blood Pressure (mm Hg) <span class="required">*</span></label>
+                    <input type="number" id="trestbps" name="trestbps" class="form-control" min="80" max="220" placeholder="e.g. 125" required>
+                    <small class="form-hint">Blood pressure on admission to hospital (mm Hg)</small>
+                </div>
+
+                <!-- Serum Cholesterol -->
+                <div class="form-group">
+                    <label for="chol" class="form-label">Serum Cholesterol (mg/dl) <span class="required">*</span></label>
+                    <input type="number" id="chol" name="chol" class="form-control" min="100" max="600" placeholder="e.g. 212" required>
+                    <small class="form-hint">Normal desirable level is &lt; 200 mg/dl</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Symptoms & Stress Test Vitals -->
+        <div class="form-section">
+            <h3 class="form-section-title">
+                <span class="section-icon">🫀</span> 2. Cardiac Symptoms & Exercise Stress Response
+            </h3>
+            <div class="form-grid">
+                <!-- Chest Pain Type -->
+                <div class="form-group">
+                    <label for="cp" class="form-label">Chest Pain Type (cp) <span class="required">*</span></label>
+                    <select id="cp" name="cp" class="form-select" required>
+                        <option value="" disabled selected>Select chest pain type</option>
+                        <option value="0">Type 0: Typical Angina (substernal chest pain on exertion)</option>
+                        <option value="1">Type 1: Atypical Angina (chest discomfort with non-classical features)</option>
+                        <option value="2">Type 2: Non-Anginal Pain (sharp or fleeting pain)</option>
+                        <option value="3">Type 3: Asymptomatic (no overt chest discomfort)</option>
+                    </select>
+                    <small class="form-hint">Categorized according to clinical guidelines</small>
+                </div>
+
+                <!-- Fasting Blood Sugar -->
+                <div class="form-group">
+                    <label for="fbs" class="form-label">Fasting Blood Sugar &gt; 120 mg/dl <span class="required">*</span></label>
+                    <select id="fbs" name="fbs" class="form-select" required>
+                        <option value="" disabled selected>Select blood sugar state</option>
+                        <option value="0">False: &le; 120 mg/dl (Normal)</option>
+                        <option value="1">True: &gt; 120 mg/dl (Elevated / Diabetic indicator)</option>
+                    </select>
+                    <small class="form-hint">Fasting blood sugar status</small>
+                </div>
+
+                <!-- Max Heart Rate -->
+                <div class="form-group">
+                    <label for="thalach" class="form-label">Maximum Heart Rate Achieved (bpm) <span class="required">*</span></label>
+                    <input type="number" id="thalach" name="thalach" class="form-control" min="60" max="220" placeholder="e.g. 168" required>
+                    <small class="form-hint">Peak beats per minute during treadmill exercise</small>
+                </div>
+
+                <!-- Exercise Induced Angina -->
+                <div class="form-group">
+                    <label for="exang" class="form-label">Exercise-Induced Angina <span class="required">*</span></label>
+                    <select id="exang" name="exang" class="form-select" required>
+                        <option value="" disabled selected>Select whether angina occurred</option>
+                        <option value="0">No (0) - No chest pain triggered by exercise</option>
+                        <option value="1">Yes (1) - Chest pain provoked by exertion</option>
+                    </select>
+                    <small class="form-hint">Did physical stress trigger angina symptoms?</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Electrocardiogram & Fluoroscopy Findings -->
+        <div class="form-section">
+            <h3 class="form-section-title">
+                <span class="section-icon">📈</span> 3. ECG, ST-Segment & Fluoroscopy Findings
+            </h3>
+            <div class="form-grid">
+                <!-- Resting ECG -->
+                <div class="form-group">
+                    <label for="restecg" class="form-label">Resting Electrocardiogram (ECG) <span class="required">*</span></label>
+                    <select id="restecg" name="restecg" class="form-select" required>
+                        <option value="" disabled selected>Select resting ECG</option>
+                        <option value="0">0: Normal</option>
+                        <option value="1">1: ST-T Wave Abnormality (T-wave inversions)</option>
+                        <option value="2">2: Left Ventricular Hypertrophy (Estes' criteria)</option>
+                    </select>
+                    <small class="form-hint">Electrical activity of heart at rest</small>
+                </div>
+
+                <!-- ST Depression (oldpeak) -->
+                <div class="form-group">
+                    <label for="oldpeak" class="form-label">ST Depression Induced by Exercise (oldpeak) <span class="required">*</span></label>
+                    <input type="number" step="0.1" id="oldpeak" name="oldpeak" class="form-control" min="0.0" max="8.0" placeholder="e.g. 1.0" required>
+                    <small class="form-hint">ST depression in mm relative to rest (0.0 to 6.2)</small>
+                </div>
+
+                <!-- Slope -->
+                <div class="form-group">
+                    <label for="slope" class="form-label">Slope of Peak Exercise ST Segment <span class="required">*</span></label>
+                    <select id="slope" name="slope" class="form-select" required>
+                        <option value="" disabled selected>Select ST slope</option>
+                        <option value="0">0: Upsloping (typically normal response)</option>
+                        <option value="1">1: Flat (horizontal ST depression)</option>
+                        <option value="2">2: Downsloping (ischemic indicator)</option>
+                    </select>
+                    <small class="form-hint">Trajectory of ST segment during peak stress</small>
+                </div>
+
+                <!-- Major Vessels (ca) -->
+                <div class="form-group">
+                    <label for="ca" class="form-label">Number of Major Vessels Colored by Fluoroscopy <span class="required">*</span></label>
+                    <select id="ca" name="ca" class="form-select" required>
+                        <option value="" disabled selected>Select number of vessels (0 - 3)</option>
+                        <option value="0">0 vessels</option>
+                        <option value="1">1 vessel</option>
+                        <option value="2">2 vessels</option>
+                        <option value="3">3 vessels</option>
+                    </select>
+                    <small class="form-hint">Vessels highlighted via fluoroscopy imaging (0–3)</small>
+                </div>
+
+                <!-- Thalassemia -->
+                <div class="form-group">
+                    <label for="thal" class="form-label">Thalassemia Test Result (thal) <span class="required">*</span></label>
+                    <select id="thal" name="thal" class="form-select" required>
+                        <option value="" disabled selected>Select thalassemia result</option>
+                        <option value="1">1: Fixed Defect (previous tissue damage/no blood flow)</option>
+                        <option value="2">2: Normal Blood Flow</option>
+                        <option value="3">3: Reversible Defect (blood flow observed but abnormal)</option>
+                    </select>
+                    <small class="form-hint">Nuclear cardiology stress test finding</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Submission Button -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg" id="btn-predict">
+                 Generate Model Prediction
+            </button>
+            <p class="form-action-note">
+                Input features will be standardized via <code>StandardScaler</code> before passing to the Logistic Regression classifier.
+            </p>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Heart Disease Prediction System{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container hero-container">
+        <div class="hero-badge"> Machine Learning College Project</div>
+        <h1 class="hero-title">Heart Disease Risk Prediction System</h1>
+        <p class="hero-subtitle">
+            An end-to-end educational machine learning system designed to predict the likelihood of cardiac disease
+            based on 13 standardized clinical features from the UCI Cleveland Heart Disease dataset.
+        </p>
+        <div class="hero-actions">
+            <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">Start Risk Prediction &rarr;</a>
+            <a href="{{ url_for('about') }}" class="btn btn-outline btn-lg">View Model Metrics & EDA</a>
+        </div>
+        
+        <div class="disclaimer-banner">
+            <span class="disclaimer-icon">ℹ️</span>
+            <p>
+                <strong>Important Notice:</strong> This software is an educational machine-learning classification project,
+                <strong>NOT a medical diagnostic system</strong>. It demonstrates applied statistical modeling and data science concepts for academic evaluation.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Key Highlights Section -->
+<section class="section metrics-strip">
+    <div class="container">
+        <div class="grid grid-4">
+            <div class="card metric-card">
+                <div class="metric-value">{{ "%.1f"|format(lr_metrics.accuracy * 100) if lr_metrics else "80.3" }}%</div>
+                <div class="metric-label">Model Accuracy</div>
+                <p class="metric-desc">Evaluated on unseen test split (Logistic Regression)</p>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-value">{{ "%.1f"|format(lr_metrics.recall * 100) if lr_metrics else "90.9" }}%</div>
+                <div class="metric-label">High Recall Rate</div>
+                <p class="metric-desc">Minimizes false negatives to reliably flag potential risks</p>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-value">13</div>
+                <div class="metric-label">Clinical Features</div>
+                <p class="metric-desc">ECG, cholesterol, blood pressure, fluoroscopy, etc.</p>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-value">303</div>
+                <div class="metric-label">Clinical Records</div>
+                <p class="metric-desc">Benchmark UCI Cleveland Heart Disease dataset</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="section workflow-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Architecture & Flow</span>
+            <h2 class="section-title">How the Prediction Pipeline Works</h2>
+            <p class="section-subtitle">
+                A robust 4-step classification pipeline replicating real-world machine learning deployment practices.
+            </p>
+        </div>
+
+        <div class="grid grid-4 flow-grid">
+            <div class="card flow-card">
+                <div class="step-number">1</div>
+                <h3>Enter Health Metrics</h3>
+                <p>Input 13 medical indicators including blood pressure, cholesterol, resting ECG, and treadmill exercise test markers.</p>
+            </div>
+            <div class="card flow-card">
+                <div class="step-number">2</div>
+                <h3>Standardized Scaling</h3>
+                <p>Numerical features are normalized using <code>StandardScaler</code> fitted strictly on the training set to prevent data leakage.</p>
+            </div>
+            <div class="card flow-card">
+                <div class="step-number">3</div>
+                <h3>Model Inference</h3>
+                <p>A calibrated Logistic Regression model calculates the decision boundary and outputs the class probability.</p>
+            </div>
+            <div class="card flow-card">
+                <div class="step-number">4</div>
+                <h3>Risk Likelihood & Insights</h3>
+                <p>The system displays the predicted risk category, confidence percentage, and highlights contributing clinical factors.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call To Action -->
+<section class="section cta-section">
+    <div class="container cta-container">
+        <h2>Ready to Test the Classifier?</h2>
+        <p>Use our interactive web form with quick-fill sample patient profiles for an instant demonstration.</p>
+        <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">Launch Prediction Form</a>
+    </div>
+</section>
+{% endblock %}
